@@ -14,7 +14,6 @@ interface TaskListProps {
     name: string;
     status: string;
     time: string;
-    days: string;
     done?: boolean;
     newOrder?: boolean;
   }>;
@@ -93,7 +92,6 @@ class TaskList extends React.Component<TaskListProps> {
 
     return (
       <Container>
-        {/* New Order */}
         <SmallBox
           onDragLeave={(e) => this.onDragLeave(e)}
           onDragEnter={(e) => this.onDragEnter(e)}
@@ -114,9 +112,9 @@ class TaskList extends React.Component<TaskListProps> {
                   onDragEnd={(e) => this.onDragEnd(e)}
                 >
                   <div className="card_right">
+                    <div className="name">{task.name}</div>
                     <div className="status">{task.status}</div>
-                    <div className="days">{task.time}</div>
-                    <div className="time">{task.days}</div>
+                    <div className="time">{task.time}</div>
                   </div>
                 </Card>
               ))}
@@ -124,7 +122,6 @@ class TaskList extends React.Component<TaskListProps> {
           </DragColumn>
         </SmallBox>
 
-        {/* In Progress */}
         <SmallBox
           onDragLeave={(e) => this.onDragLeave(e)}
           onDragEnter={(e) => this.onDragEnter(e)}
@@ -145,9 +142,9 @@ class TaskList extends React.Component<TaskListProps> {
                   onDragEnd={(e) => this.onDragEnd(e)}
                 >
                   <div className="card_right">
+                    <div className="name">{task.name}</div>
                     <div className="status">{task.status}</div>
-                    <div className="days">{task.time}</div>
-                    <div className="time">{task.days}</div>
+                    <div className="time">{task.time}</div>
                   </div>
                 </Card>
               ))}
@@ -175,9 +172,9 @@ class TaskList extends React.Component<TaskListProps> {
                   onDragEnd={(e) => this.onDragEnd(e)}
                 >
                   <div className="card_right">
+                    <div className="name">{task.name}</div>
                     <div className="status">{task.status}</div>
-                    <div className="days">{task.time}</div>
-                    <div className="time">{task.days}</div>
+                    <div className="time">{task.time}</div>
                   </div>
                 </Card>
               ))}

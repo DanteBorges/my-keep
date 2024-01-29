@@ -14,7 +14,6 @@ export const Card = styled.div`
   cursor: move;
 
   .status,
-  .days,
   .time {
     font-size: 14px;
     margin-bottom: 7px;
@@ -26,7 +25,8 @@ export const Card = styled.div`
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
+    gap: 1rem;
   }
 
   &.order .status {
