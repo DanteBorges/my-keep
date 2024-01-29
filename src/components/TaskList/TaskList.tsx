@@ -6,8 +6,13 @@ import {
   DragColumn,
   DragRow,
   SmallBox,
+  CrudOptions,
+  HeadCard,
+  CreateCardButton,
 } from "./styles";
-
+import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 interface TaskListProps {
   tasks: Array<{
     id: number;
@@ -101,8 +106,13 @@ class TaskList extends React.Component<TaskListProps> {
         >
           <DragColumn>
             <DragRow>
-              <Heading4>Todo List</Heading4>
-              <button style={{ width: "100%" }}>+</button>
+              <HeadCard>
+                <Heading4>To do List</Heading4>
+                <CreateCardButton>
+                  <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
+                </CreateCardButton>
+              </HeadCard>
+
               {newOrder.map((task) => (
                 <Card
                   key={task.id}
@@ -111,10 +121,12 @@ class TaskList extends React.Component<TaskListProps> {
                   onDragStart={(e) => this.onDragStart(e)}
                   onDragEnd={(e) => this.onDragEnd(e)}
                 >
-                  <div className="card_right">
-                    <div className="name">{task.name}</div>
-                    <div className="status">{task.status}</div>
-                    <div className="time">{task.time}</div>
+                  <div>
+                    <div className="card_right">
+                      <div className="name">{task.name}</div>
+                      <div className="status">{task.status}</div>
+                      <div className="time">{task.time}</div>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -162,7 +174,12 @@ class TaskList extends React.Component<TaskListProps> {
           <DragColumn>
             <DragRow>
               <Heading4>Completed</Heading4>
-              <button style={{ width: "100%" }}>+</button>
+              <CrudOptions>
+                <button style={{ width: "100%" }}>+</button>
+                <IconButton aria-label="delete">
+                  <DeleteIcon />
+                </IconButton>
+              </CrudOptions>
               {done.map((task) => (
                 <Card
                   key={task.id.toString()}
