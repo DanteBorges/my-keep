@@ -51,19 +51,13 @@ export const Card = styled.div`
   }
 `;
 
-export const HeadCard = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 2rem;
-  margin: 0 0.6rem 0.6rem;
-`;
+
 
 export const CrudOptions = styled.div`
   display: flex;
 `;
 
+// Tirar essa classe apos implementar em todos os cartões
 export const Heading4 = styled.h4`
   font-family: "Arial", sans-serif;
   font-size: 16px;
@@ -73,6 +67,7 @@ export const Heading4 = styled.h4`
   color: #0062ff;
   margin: 0;
 `;
+// Tirar essa classe apos implementar em todos os cartões
 
 export const CreateCardButton = styled.button`
   background: none;

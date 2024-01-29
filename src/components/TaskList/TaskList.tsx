@@ -7,12 +7,11 @@ import {
   DragRow,
   SmallBox,
   CrudOptions,
-  HeadCard,
-  CreateCardButton,
+
 } from "./styles";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
+import CreateCard from "../CreateCard/CreateCard";
 interface TaskListProps {
   tasks: Array<{
     id: number;
@@ -106,13 +105,8 @@ class TaskList extends React.Component<TaskListProps> {
         >
           <DragColumn>
             <DragRow>
-              <HeadCard>
-                <Heading4>To do List</Heading4>
-                <CreateCardButton>
-                  <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
-                </CreateCardButton>
-              </HeadCard>
-
+              <CreateCard />
+              
               {newOrder.map((task) => (
                 <Card
                   key={task.id}
