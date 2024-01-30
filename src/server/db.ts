@@ -3,7 +3,8 @@ export const TASKS = [
     id: 1,
     name: "Awake up",
     status: "New Order",
-    time: "8 hrs",
+    hours: 8,
+    minutes:10,
     done: false,
 
   },
@@ -11,14 +12,16 @@ export const TASKS = [
     id: 2,
     name: "breakfast",
     status: "In Progress",
-    time: "6 hrs",
+    hours: 6,
+    minutes:10,
     done: false,
   },
   {
     id: 3,
     name: "Work",
     status: "Completed",
-    time: "13 hrs",
+    hours: 13,
+    minutes:10,
     done: true,
 
   },

@@ -9,7 +9,6 @@ import {
   HeadCard,
   CreateCardButton,
 } from "./styles";
-// import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import ModalAddCard from "../ModalAddCard/ModalAddCard";
 
@@ -17,7 +16,8 @@ interface Task {
   id: number;
   name: string;
   status: string;
-  time: string;
+  hours: number;
+  minutes: number;
   done?: boolean;
   newOrder?: boolean;
 }
@@ -102,7 +102,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
-
               {tasks
                 .filter((data) => data.status === "New Order")
                 .map((task) => (
@@ -113,11 +112,19 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
                     onDragStart={(e) => onDragStart(e)}
                     onDragEnd={(e) => onDragEnd(e)}
                   >
-                    <div>
-                      <div className="card_right">
-                        <div className="name">{task.name}</div>
-                        <div className="status">{task.status}</div>
-                        <div className="time">{task.time}</div>
+                    <div className="card_right">
+                      <div className="name">{task.name}</div>
+                      <div className="status">{task.status}</div>
+                      <div style={{ display: "flex" }}>
+                        <div className="hours" style={{ marginRight: "5px" }}>
+                          <span>{task.hours}</span> hours
+                        </div>
+                        <div className="minutes">
+                          <span style={{ marginRight: "5px" }}>
+                            {task.minutes}
+                          </span>{" "}
+                          minutes
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -135,8 +142,12 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
         >
           <DragColumn>
             <DragRow>
-              <Heading4>In Progress</Heading4>
-              <button style={{ width: "100%" }}>+</button>
+              <HeadCard>
+                <Heading4>In Progress</Heading4>
+                <CreateCardButton onClick={() => setOpenModal(true)}>
+                  <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
+                </CreateCardButton>
+              </HeadCard>
               {tasks
                 .filter((data) => data.status === "In Progress")
                 .map((task) => (
@@ -150,7 +161,17 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
                     <div className="card_right">
                       <div className="name">{task.name}</div>
                       <div className="status">{task.status}</div>
-                      <div className="time">{task.time}</div>
+                      <div style={{ display: "flex" }}>
+                        <div className="hours" style={{ marginRight: "5px" }}>
+                          <span>{task.hours}</span> hours
+                        </div>
+                        <div className="minutes">
+                          <span style={{ marginRight: "5px" }}>
+                            {task.minutes}
+                          </span>{" "}
+                          minutes
+                        </div>
+                      </div>
                     </div>
                   </Card>
                 ))}
@@ -184,11 +205,19 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
                     onDragStart={(e) => onDragStart(e)}
                     onDragEnd={(e) => onDragEnd(e)}
                   >
-                    <div>
-                      <div className="card_right">
-                        <div className="name">{task.name}</div>
-                        <div className="status">{task.status}</div>
-                        <div className="time">{task.time}</div>
+                    <div className="card_right">
+                      <div className="name">{task.name}</div>
+                      <div className="status">{task.status}</div>
+                      <div style={{ display: "flex" }}>
+                        <div className="hours" style={{ marginRight: "5px" }}>
+                          <span>{task.hours}</span> hours
+                        </div>
+                        <div className="minutes">
+                          <span style={{ marginRight: "5px" }}>
+                            {task.minutes}
+                          </span>{" "}
+                          minutes
+                        </div>
                       </div>
                     </div>
                   </Card>

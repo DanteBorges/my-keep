@@ -13,10 +13,9 @@ export const Card = styled.div`
   margin-bottom: 15px;
   cursor: move;
 
-  .status,
-  .time {
+  .status
+   {
     font-size: 14px;
-    margin-bottom: 7px;
   }
 
   .card_right {

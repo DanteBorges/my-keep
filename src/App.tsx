@@ -1,7 +1,7 @@
 import React from "react";
-import { TASKS } from "./server/json";
 import TaskList from "./components/TaskList/TaskList";
 import { AppStyle } from "./styles/themes/SimpleTheme";
+import { TASKS } from "./server/db";
 
 function App() {
   return (

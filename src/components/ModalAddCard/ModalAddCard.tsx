@@ -1,14 +1,13 @@
+import { StyledDialog, StyledDialogTitle } from "./styles";
 import React, { useEffect, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import { DialogContentText } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 
 interface ModalProps {
   open: boolean;
-  onClose: () => void; 
+  onClose: () => void;
 }
 
 const ModalAddCard: React.FC<ModalProps> = ({ open, onClose }) => {
@@ -19,25 +18,62 @@ const ModalAddCard: React.FC<ModalProps> = ({ open, onClose }) => {
   }, [open]);
 
   const handleClose = () => {
-    setClose(true); 
-    onClose(); 
+    setClose(true);
+    onClose();
   };
 
   return (
     <>
-      <Dialog
+      <StyledDialog
         open={open}
-        onClose={handleClose} 
+        onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
       >
-        <DialogTitle id="draggable-dialog-title">
-          Create To do List Card
-        </DialogTitle>
+        <StyledDialogTitle>Create To do List Card</StyledDialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Name"
+            type="text"
+            fullWidth
+            // value={formData.name}
+            // onChange={handleChange}
+          />
+          <TextField
+            margin="dense"
+            id="status"
+            label="status"
+            type="text"
+            fullWidth
+            // value={formData.email}
+            // onChange={handleChange}
+          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                margin="dense"
+                id="hours"
+                label="Hours"
+                type="number"
+                fullWidth
+                // value={hours}
+                // onChange={(e) => setHours(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                margin="dense"
+                id="minutes"
+                label="Minutes"
+                type="number"
+                fullWidth
+                // value={minutes}
+                // onChange={(e) => setMinutes(e.target.value)}
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="error" onClick={handleClose}>
@@ -47,7 +83,7 @@ const ModalAddCard: React.FC<ModalProps> = ({ open, onClose }) => {
             Save
           </Button>
         </DialogActions>
-      </Dialog>
+      </StyledDialog>
     </>
   );
 };
