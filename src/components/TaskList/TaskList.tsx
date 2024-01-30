@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Card,
   Heading4,
@@ -22,13 +23,22 @@ interface Task {
   newOrder?: boolean;
 }
 
-interface TaskListProps {
-  tasks: Task[];
-}
-
-const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
+const TaskList: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [openModal, setOpenModal] = useState(false);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get<Task[]>("http://localhost:3001/tasks");
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const onDragStart = (evt: React.DragEvent<HTMLDivElement>) => {
     let element = evt.currentTarget;
@@ -64,21 +74,32 @@ const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
     evt.dataTransfer.dropEffect = "move";
   };
 
-  const onDrop = (
+  const onDrop = async (
     evt: React.DragEvent<HTMLDivElement>,
     value: boolean,
     status: string
   ) => {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
-    let data = evt.dataTransfer.getData("text/plain");
-    let updated = tasks.map((task) => {
-      if (task.id === parseInt(data, 10)) {
-        task.status = status;
+    const data = evt.dataTransfer.getData("text/plain");
+    const taskToUpdate = tasks.find((task) => task.id === parseInt(data, 10));
+
+    if (taskToUpdate) {
+      try {
+        const response = await axios.patch<Task>(
+          `http://localhost:3001/tasks/${taskToUpdate.id}`,
+          { status }
+        );
+
+        const updatedTasks = tasks.map((task) =>
+          task.id === taskToUpdate.id ? response.data : task
+        );
+
+        setTasks(updatedTasks);
+      } catch (error) {
+        console.error("Error updating task:", error);
       }
-      return task;
-    });
-    setTasks(updated);
+    }
   };
 
   const closeModal = () => {
