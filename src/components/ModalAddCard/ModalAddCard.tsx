@@ -7,10 +7,11 @@ import { Grid, TextField } from "@mui/material";
 
 interface ModalProps {
   open: boolean;
+  typeCard:string;
   onClose: () => void;
 }
 
-const ModalAddCard: React.FC<ModalProps> = ({ open, onClose }) => {
+const ModalAddCard: React.FC<ModalProps> = ({ open, onClose,typeCard }) => {
   const [close, setClose] = useState(true);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ const ModalAddCard: React.FC<ModalProps> = ({ open, onClose }) => {
         onClose={handleClose}
         aria-labelledby="draggable-dialog-title"
       >
-        <StyledDialogTitle>Create To do List Card</StyledDialogTitle>
+        <StyledDialogTitle>Create </StyledDialogTitle>
         <DialogContent>
           <TextField
             autoFocus

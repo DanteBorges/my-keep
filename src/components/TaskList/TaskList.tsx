@@ -25,7 +25,8 @@ interface Task {
 
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [typeOfCards, setTypeOfCards] = useState<string>("");
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -39,6 +40,23 @@ const TaskList: React.FC = () => {
 
     fetchTasks();
   }, []);
+
+  const updateTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      const response = await axios.patch<Task>(
+        `http://localhost:3001/tasks/${taskId}`,
+        {
+          status: newStatus,
+        }
+      );
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === taskId ? response.data : task))
+      );
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
 
   const onDragStart = (evt: React.DragEvent<HTMLDivElement>) => {
     let element = evt.currentTarget;
@@ -82,29 +100,59 @@ const TaskList: React.FC = () => {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     const data = evt.dataTransfer.getData("text/plain");
-    const taskToUpdate = tasks.find((task) => task.id === parseInt(data, 10));
+    const taskId = parseInt(data, 10);
 
-    if (taskToUpdate) {
-      try {
-        const response = await axios.patch<Task>(
-          `http://localhost:3001/tasks/${taskToUpdate.id}`,
-          { status }
-        );
+    await updateTaskStatus(taskId, status);
 
-        const updatedTasks = tasks.map((task) =>
-          task.id === taskToUpdate.id ? response.data : task
-        );
-
-        setTasks(updatedTasks);
-      } catch (error) {
-        console.error("Error updating task:", error);
-      }
+    const updatedTasks = await fetchTasks();
+    setTasks(updatedTasks);
+  };
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get<Task[]>("http://localhost:3001/tasks");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      return [];
     }
+  };
+
+  const AddCardFunction = (item: string) => {
+    setOpenModal(true);
+    setTypeOfCards(item);
   };
 
   const closeModal = () => {
     setOpenModal(false);
   };
+
+  const renderTaskList = (status: string) =>
+    tasks
+      .filter((data) => data.status === status)
+      .map((task) => (
+        <Card
+          key={task.id}
+          id={String(task.id)}
+          draggable
+          onDragStart={(e) => onDragStart(e)}
+          onDragEnd={(e) => onDragEnd(e)}
+        >
+          <div className="card_right">
+            <div className="name">{task.name}</div>
+            <div className="status">{task.status}</div>
+            <div style={{ display: "flex" }}>
+              <div className="hours" style={{ marginRight: "5px" }}>
+                <span>{task.hours}</span> hours
+              </div>
+              <div className="minutes">
+                <span style={{ marginRight: "5px" }}>{task.minutes}</span>{" "}
+                minutes
+              </div>
+            </div>
+          </div>
+        </Card>
+      ));
+
   return (
     <>
       <Container>
@@ -119,37 +167,11 @@ const TaskList: React.FC = () => {
             <DragRow>
               <HeadCard>
                 <Heading4>To do List</Heading4>
-                <CreateCardButton onClick={() => setOpenModal(true)}>
+                <CreateCardButton onClick={() => AddCardFunction("New Order")}>
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
-              {tasks
-                .filter((data) => data.status === "New Order")
-                .map((task) => (
-                  <Card
-                    key={task.id}
-                    id={String(task.id)}
-                    draggable
-                    onDragStart={(e) => onDragStart(e)}
-                    onDragEnd={(e) => onDragEnd(e)}
-                  >
-                    <div className="card_right">
-                      <div className="name">{task.name}</div>
-                      <div className="status">{task.status}</div>
-                      <div style={{ display: "flex" }}>
-                        <div className="hours" style={{ marginRight: "5px" }}>
-                          <span>{task.hours}</span> hours
-                        </div>
-                        <div className="minutes">
-                          <span style={{ marginRight: "5px" }}>
-                            {task.minutes}
-                          </span>{" "}
-                          minutes
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+              {renderTaskList("New Order")}
             </DragRow>
           </DragColumn>
         </SmallBox>
@@ -169,33 +191,7 @@ const TaskList: React.FC = () => {
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
-              {tasks
-                .filter((data) => data.status === "In Progress")
-                .map((task) => (
-                  <Card
-                    key={task.id.toString()}
-                    id={String(task.id)}
-                    draggable
-                    onDragStart={(e) => onDragStart(e)}
-                    onDragEnd={(e) => onDragEnd(e)}
-                  >
-                    <div className="card_right">
-                      <div className="name">{task.name}</div>
-                      <div className="status">{task.status}</div>
-                      <div style={{ display: "flex" }}>
-                        <div className="hours" style={{ marginRight: "5px" }}>
-                          <span>{task.hours}</span> hours
-                        </div>
-                        <div className="minutes">
-                          <span style={{ marginRight: "5px" }}>
-                            {task.minutes}
-                          </span>{" "}
-                          minutes
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+              {renderTaskList("In Progress")}
             </DragRow>
           </DragColumn>
         </SmallBox>
@@ -215,40 +211,17 @@ const TaskList: React.FC = () => {
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
-
-              {tasks
-                .filter((data) => data.status === "Completed")
-                .map((task) => (
-                  <Card
-                    key={task.id}
-                    id={String(task.id)}
-                    draggable
-                    onDragStart={(e) => onDragStart(e)}
-                    onDragEnd={(e) => onDragEnd(e)}
-                  >
-                    <div className="card_right">
-                      <div className="name">{task.name}</div>
-                      <div className="status">{task.status}</div>
-                      <div style={{ display: "flex" }}>
-                        <div className="hours" style={{ marginRight: "5px" }}>
-                          <span>{task.hours}</span> hours
-                        </div>
-                        <div className="minutes">
-                          <span style={{ marginRight: "5px" }}>
-                            {task.minutes}
-                          </span>{" "}
-                          minutes
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+              {renderTaskList("Completed")}
             </DragRow>
           </DragColumn>
         </SmallBox>
       </Container>
 
-      <ModalAddCard open={openModal} onClose={closeModal} />
+      <ModalAddCard
+        open={openModal}
+        onClose={closeModal}
+        typeCard={typeOfCards}
+      />
     </>
   );
 };
