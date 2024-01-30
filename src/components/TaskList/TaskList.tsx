@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   Heading4,
@@ -6,53 +6,49 @@ import {
   DragColumn,
   DragRow,
   SmallBox,
-  CrudOptions,
-
+  HeadCard,
+  CreateCardButton,
 } from "./styles";
-import { IconButton } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CreateCard from "../CreateCard/CreateCard";
-interface TaskListProps {
-  tasks: Array<{
-    id: number;
-    name: string;
-    status: string;
-    time: string;
-    done?: boolean;
-    newOrder?: boolean;
-  }>;
+// import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import ModalAddCard from "../ModalAddCard/ModalAddCard";
+
+interface Task {
+  id: number;
+  name: string;
+  status: string;
+  time: string;
+  done?: boolean;
+  newOrder?: boolean;
 }
-class TaskList extends React.Component<TaskListProps> {
-  state = {
-    tasks: this.props.tasks || [],
-  };
 
-  componentDidMount() {
-    const { tasks } = this.props;
-    this.setState({
-      tasks: tasks || [],
-    });
-  }
+interface TaskListProps {
+  tasks: Task[];
+}
 
-  onDragStart = (evt: React.DragEvent<HTMLDivElement>) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks: initialTasks }) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
+  const [openModal, setOpenModal] = useState(false);
+
+  const onDragStart = (evt: React.DragEvent<HTMLDivElement>) => {
     let element = evt.currentTarget;
     element.classList.add("dragged");
     evt.dataTransfer.setData("text/plain", evt.currentTarget.id);
     evt.dataTransfer.effectAllowed = "move";
   };
 
-  onDragEnd = (evt: React.DragEvent<HTMLDivElement>) => {
+  const onDragEnd = (evt: React.DragEvent<HTMLDivElement>) => {
     evt.currentTarget.classList.remove("dragged");
   };
 
-  onDragEnter = (evt: React.DragEvent<HTMLDivElement>) => {
+  const onDragEnter = (evt: React.DragEvent<HTMLDivElement>) => {
     evt.preventDefault();
     let element = evt.currentTarget;
     element.classList.add("dragged-over");
     evt.dataTransfer.dropEffect = "move";
   };
 
-  onDragLeave = (evt: React.DragEvent<HTMLDivElement>) => {
+  const onDragLeave = (evt: React.DragEvent<HTMLDivElement>) => {
     let currentTarget = evt.currentTarget;
     let newTarget = evt.relatedTarget;
 
@@ -63,12 +59,12 @@ class TaskList extends React.Component<TaskListProps> {
     element.classList.remove("dragged-over");
   };
 
-  onDragOver = (evt: React.DragEvent<HTMLDivElement>) => {
+  const onDragOver = (evt: React.DragEvent<HTMLDivElement>) => {
     evt.preventDefault();
     evt.dataTransfer.dropEffect = "move";
   };
 
-  onDrop = (
+  const onDrop = (
     evt: React.DragEvent<HTMLDivElement>,
     value: boolean,
     status: string
@@ -76,125 +72,135 @@ class TaskList extends React.Component<TaskListProps> {
     evt.preventDefault();
     evt.currentTarget.classList.remove("dragged-over");
     let data = evt.dataTransfer.getData("text/plain");
-    let tasks = this.state.tasks;
-    console.log("data", data, status);
     let updated = tasks.map((task) => {
       if (task.id === parseInt(data, 10)) {
         task.status = status;
       }
       return task;
     });
-    this.setState({ tasks: updated });
+    setTasks(updated);
   };
 
-  render() {
-    const { tasks } = this.state;
-    console.log("tasks", tasks);
-    let pending = tasks.filter((data) => data.status === "In Progress");
-    let done = tasks.filter((data) => data.status === "Completed");
-    let newOrder = tasks.filter((data) => data.status === "New Order");
-
-    return (
+  const closeModal = () => {
+    setOpenModal(false);
+  };
+  return (
+    <>
       <Container>
         <SmallBox
-          onDragLeave={(e) => this.onDragLeave(e)}
-          onDragEnter={(e) => this.onDragEnter(e)}
-          onDragEnd={(e) => this.onDragEnd(e)}
-          onDragOver={(e) => this.onDragOver(e)}
-          onDrop={(e) => this.onDrop(e, false, "New Order")}
+          onDragLeave={(e) => onDragLeave(e)}
+          onDragEnter={(e) => onDragEnter(e)}
+          onDragEnd={(e) => onDragEnd(e)}
+          onDragOver={(e) => onDragOver(e)}
+          onDrop={(e) => onDrop(e, false, "New Order")}
         >
           <DragColumn>
             <DragRow>
-              <CreateCard />
-              
-              {newOrder.map((task) => (
-                <Card
-                  key={task.id}
-                  id={String(task.id)}
-                  draggable
-                  onDragStart={(e) => this.onDragStart(e)}
-                  onDragEnd={(e) => this.onDragEnd(e)}
-                >
-                  <div>
-                    <div className="card_right">
-                      <div className="name">{task.name}</div>
-                      <div className="status">{task.status}</div>
-                      <div className="time">{task.time}</div>
+              <HeadCard>
+                <Heading4>To do List</Heading4>
+                <CreateCardButton onClick={() => setOpenModal(true)}>
+                  <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
+                </CreateCardButton>
+              </HeadCard>
+
+              {tasks
+                .filter((data) => data.status === "New Order")
+                .map((task) => (
+                  <Card
+                    key={task.id}
+                    id={String(task.id)}
+                    draggable
+                    onDragStart={(e) => onDragStart(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                  >
+                    <div>
+                      <div className="card_right">
+                        <div className="name">{task.name}</div>
+                        <div className="status">{task.status}</div>
+                        <div className="time">{task.time}</div>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))}
             </DragRow>
           </DragColumn>
         </SmallBox>
 
         <SmallBox
-          onDragLeave={(e) => this.onDragLeave(e)}
-          onDragEnter={(e) => this.onDragEnter(e)}
-          onDragEnd={(e) => this.onDragEnd(e)}
-          onDragOver={(e) => this.onDragOver(e)}
-          onDrop={(e) => this.onDrop(e, false, "In Progress")}
+          onDragLeave={(e) => onDragLeave(e)}
+          onDragEnter={(e) => onDragEnter(e)}
+          onDragEnd={(e) => onDragEnd(e)}
+          onDragOver={(e) => onDragOver(e)}
+          onDrop={(e) => onDrop(e, false, "In Progress")}
         >
           <DragColumn>
             <DragRow>
               <Heading4>In Progress</Heading4>
               <button style={{ width: "100%" }}>+</button>
-              {pending.map((task) => (
-                <Card
-                  key={task.id.toString()}
-                  id={String(task.id)}
-                  draggable
-                  onDragStart={(e) => this.onDragStart(e)}
-                  onDragEnd={(e) => this.onDragEnd(e)}
-                >
-                  <div className="card_right">
-                    <div className="name">{task.name}</div>
-                    <div className="status">{task.status}</div>
-                    <div className="time">{task.time}</div>
-                  </div>
-                </Card>
-              ))}
+              {tasks
+                .filter((data) => data.status === "In Progress")
+                .map((task) => (
+                  <Card
+                    key={task.id.toString()}
+                    id={String(task.id)}
+                    draggable
+                    onDragStart={(e) => onDragStart(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                  >
+                    <div className="card_right">
+                      <div className="name">{task.name}</div>
+                      <div className="status">{task.status}</div>
+                      <div className="time">{task.time}</div>
+                    </div>
+                  </Card>
+                ))}
             </DragRow>
           </DragColumn>
         </SmallBox>
 
         <SmallBox
-          onDragLeave={(e) => this.onDragLeave(e)}
-          onDragEnter={(e) => this.onDragEnter(e)}
-          onDragEnd={(e) => this.onDragEnd(e)}
-          onDragOver={(e) => this.onDragOver(e)}
-          onDrop={(e) => this.onDrop(e, true, "Completed")}
+          onDragLeave={(e) => onDragLeave(e)}
+          onDragEnter={(e) => onDragEnter(e)}
+          onDragEnd={(e) => onDragEnd(e)}
+          onDragOver={(e) => onDragOver(e)}
+          onDrop={(e) => onDrop(e, false, "Completed")}
         >
           <DragColumn>
             <DragRow>
-              <Heading4>Completed</Heading4>
-              <CrudOptions>
-                <button style={{ width: "100%" }}>+</button>
-                <IconButton aria-label="delete">
-                  <DeleteIcon />
-                </IconButton>
-              </CrudOptions>
-              {done.map((task) => (
-                <Card
-                  key={task.id.toString()}
-                  id={String(task.id)}
-                  draggable
-                  onDragStart={(e) => this.onDragStart(e)}
-                  onDragEnd={(e) => this.onDragEnd(e)}
-                >
-                  <div className="card_right">
-                    <div className="name">{task.name}</div>
-                    <div className="status">{task.status}</div>
-                    <div className="time">{task.time}</div>
-                  </div>
-                </Card>
-              ))}
+              <HeadCard>
+                <Heading4>Completed </Heading4>
+                <CreateCardButton onClick={() => setOpenModal(true)}>
+                  <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
+                </CreateCardButton>
+              </HeadCard>
+
+              {tasks
+                .filter((data) => data.status === "Completed")
+                .map((task) => (
+                  <Card
+                    key={task.id}
+                    id={String(task.id)}
+                    draggable
+                    onDragStart={(e) => onDragStart(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                  >
+                    <div>
+                      <div className="card_right">
+                        <div className="name">{task.name}</div>
+                        <div className="status">{task.status}</div>
+                        <div className="time">{task.time}</div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
             </DragRow>
           </DragColumn>
         </SmallBox>
       </Container>
-    );
-  }
-}
+
+      <ModalAddCard open={openModal} onClose={closeModal} />
+    </>
+  );
+};
 
 export default TaskList;
