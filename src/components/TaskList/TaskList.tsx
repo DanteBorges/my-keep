@@ -166,7 +166,7 @@ const TaskList: React.FC = () => {
           <DragColumn>
             <DragRow>
               <HeadCard>
-                <Heading4>To do List</Heading4>
+                <Heading4>New Order</Heading4>
                 <CreateCardButton onClick={() => AddCardFunction("New Order")}>
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
@@ -187,7 +187,9 @@ const TaskList: React.FC = () => {
             <DragRow>
               <HeadCard>
                 <Heading4>In Progress</Heading4>
-                <CreateCardButton onClick={() => setOpenModal(true)}>
+                <CreateCardButton
+                  onClick={() => AddCardFunction("In Progress")}
+                >
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
@@ -207,7 +209,7 @@ const TaskList: React.FC = () => {
             <DragRow>
               <HeadCard>
                 <Heading4>Completed </Heading4>
-                <CreateCardButton onClick={() => setOpenModal(true)}>
+                <CreateCardButton onClick={() => AddCardFunction("Completed")}>
                   <AddIcon style={{ color: "#059e0a", fontSize: "bold" }} />
                 </CreateCardButton>
               </HeadCard>
